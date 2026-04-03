@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employer Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .card {
+            display: inline-block;
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-right: 10px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            min-width: 180px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #999;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Employer Dashboard</h1>
+
+    <div class="card">
+        <strong>Total Employees:</strong><br>
+        {{ total_employees }}
+    </div>
+
+    <div class="card">
+        <strong>Total Departments:</strong><br>
+        {{ total_departments }}
+    </div>
+
+    <div class="card">
+        <strong>Active Employees:</strong><br>
+        {{ active_employees }}
+    </div>
+
+    <h2>Employee List</h2>
+
+    <table>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Department</th>
+            <th>Position</th>
+            <th>Hire Date</th>
+            <th>Status</th>
+        </tr>
+
+        {% for employee in employees %}
+        <tr>
+            <td>{{ employee.first_name }}</td>
+            <td>{{ employee.last_name }}</td>
+            <td>{{ employee.department.department_name }}</td>
+            <td>{{ employee.position.position_title }}</td>
+            <td>{{ employee.hire_date }}</td>
+            <td>{{ employee.status }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No employees found.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employer Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        .section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        form p {
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #2d6cdf;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1d56b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+
+        table, th, td {
+            border: 1px solid #bbb;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #ececec;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Employer Dashboard</h1>
+
+    <div class="section">
+        <h2>Add Department</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="department">
+            {{ department_form.as_p }}
+            <button type="submit">Add Department</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Add Position</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="position">
+            {{ position_form.as_p }}
+            <button type="submit">Add Position</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Add Employee</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="employee">
+            {{ employee_form.as_p }}
+            <button type="submit">Add Employee</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Add Attendance</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="attendance">
+            {{ attendance_form.as_p }}
+            <button type="submit">Add Attendance</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Add Payroll Record</h2>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="payroll">
+            {{ payroll_form.as_p }}
+            <button type="submit">Add Payroll</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Employees</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Position</th>
+                <th>Hire Date</th>
+                <th>Status</th>
+            </tr>
+            {% for employee in employees %}
+            <tr>
+                <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                <td>{{ employee.department.department_name }}</td>
+                <td>{{ employee.position.position_title }}</td>
+                <td>{{ employee.hire_date }}</td>
+                <td>{{ employee.status }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No employees added yet.</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Attendance Records</h2>
+        <table>
+            <tr>
+                <th>Employee</th>
+                <th>Work Date</th>
+                <th>Hours Worked</th>
+                <th>Overtime Hours</th>
+            </tr>
+            {% for record in attendance_records %}
+            <tr>
+                <td>{{ record.employee.first_name }} {{ record.employee.last_name }}</td>
+                <td>{{ record.work_date }}</td>
+                <td>{{ record.hours_worked }}</td>
+                <td>{{ record.overtime_hours }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No attendance records added yet.</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Payroll Records</h2>
+        <table>
+            <tr>
+                <th>Employee</th>
+                <th>Pay Period Start</th>
+                <th>Pay Period End</th>
+                <th>Gross Salary</th>
+                <th>Net Salary</th>
+            </tr>
+            {% for record in payroll_records %}
+            <tr>
+                <td>{{ record.employee.first_name }} {{ record.employee.last_name }}</td>
+                <td>{{ record.pay_period_start }}</td>
+                <td>{{ record.pay_period_end }}</td>
+                <td>{{ record.gross_salary }}</td>
+                <td>{{ record.net_salary }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No payroll records added yet.</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</body>
+</html>
+</html>
