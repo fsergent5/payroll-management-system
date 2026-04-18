@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Portal</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            background: #f7f7f7;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        button {
+            padding: 10px 15px;
+            background: #3f8672;
+            color: white;
+            border: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Employee Portal</h1>
+
+<!-- EMPLOYEE INFO -->
+<div class="card">
+    <h3>Welcome {{ employee.first_name }} {{ employee.last_name }}</h3>
+    <p><strong>Department:</strong> {{ employee.department.department_name }}</p>
+    <p><strong>Position:</strong> {{ employee.position.position_title }}</p>
+    <p><strong>Status:</strong> {{ employee.status }}</p>
+</div>
+
+<!-- ATTENDANCE -->
+<div class="card">
+    <h2>My Attendance</h2>
+
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Hours</th>
+            <th>Overtime</th>
+        </tr>
+
+        {% for record in attendance_records %}
+        <tr>
+            <td>{{ record.work_date }}</td>
+            <td>{{ record.hours_worked }}</td>
+            <td>{{ record.overtime_hours }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">No attendance records yet.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- PAYROLL -->
+<div class="card">
+    <h2>My Payroll</h2>
+
+    <table>
+        <tr>
+            <th>Start</th>
+            <th>End</th>
+            <th>Gross</th>
+            <th>Net</th>
+        </tr>
+
+        {% for record in payroll_records %}
+        <tr>
+            <td>{{ record.pay_period_start }}</td>
+            <td>{{ record.pay_period_end }}</td>
+            <td>{{ record.gross_salary }}</td>
+            <td>{{ record.net_salary }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No payroll records yet.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<a href="{% url 'timesheet_portal' %}">
+    <button type="button">Submit Timesheet</button>
+</a>
+
+</body>
+</html>

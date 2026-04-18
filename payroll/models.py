@@ -1,11 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Department(models.Model):
     department_name = models.CharField(max_length=100)
+    department_id= models.CharField(max_length=20, unique=True)
 
     def __str__(self):
         return self.department_name
+    
 
 
 class Position(models.Model):
@@ -17,6 +20,7 @@ class Position(models.Model):
 
 
 class Employee(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     STATUS_CHOICES = [
         ('ACTIVE', 'Active'),
         ('INACTIVE', 'Inactive'),
@@ -56,3 +60,17 @@ class Payroll(models.Model):
 
     def __str__(self):
         return f"{self.employee} Payroll ({self.pay_period_start} to {self.pay_period_end})"
+    
+class Timesheet(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+
+    week_start = models.DateField()
+    week_end = models.DateField()
+
+    mon_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    tues_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    wed_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    thurs_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    fri_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    sat_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    sun_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0)

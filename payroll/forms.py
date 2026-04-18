@@ -2,12 +2,12 @@ from django import forms
 from .models import Department, Position, Employee, Attendance, Payroll
 
 
+
 class DepartmentForm(forms.ModelForm):
     class Meta:
         model = Department
-        fields = ['department_name']
-
-
+        fields = ['department_name','department_id']
+       
 class PositionForm(forms.ModelForm):
     class Meta:
         model = Position
@@ -26,7 +26,7 @@ class EmployeeForm(forms.ModelForm):
 class AttendanceForm(forms.ModelForm):
     class Meta:
         model = Attendance
-        fields = ['employee', 'work_date', 'hours_worked', 'overtime_hours']
+        fields = [ 'work_date', 'hours_worked', 'overtime_hours']
         widgets = {
             'work_date': forms.DateInput(attrs={'type': 'date'})
         }

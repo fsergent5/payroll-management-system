@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+
+<div>
+        <h1>Timesheet portal</h1>
+</div>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+<table  style="width:80%">
+    <tr>
+    <th>Day </th>
+    <th>Hours Worked </th>
+    <th>Overtime</th>
+    </tr>
+    <tr>
+     <td> Monday </td> 
+     <td><input type="text" id= "mon_hours" name="mon_hours"></td>
+     <td><input type="text" id= "mon_overtime" name="mon_overtime"></td>
+    </tr>
+     <tr>
+     <td> Tuesday </td> 
+     <td><input type="text" id= "tues_Hours" name="hours"></td>
+     <td><input type="text" id= "tues_overtime" name="tues_overtime"></td>
+
+     </tr>
+    <tr>
+     <td> Wednesday </td>
+     <td><input type="text" id= "wed_Hours" name="wed_Hours"></td>
+     <td><input type="text" id= "wed_overtime" name="wed_overtime"></td>
+
+    </tr>
+    <tr>
+     <td> Thursday </td> 
+     <td><input type="text" id= "thurs_hours" name="thurs_hours"></td>
+     <td><input type="text" id= "thurs_overtime" name="thurs_overtime"></td>
+
+    </tr>
+    <tr>
+    <td> Friday </td>
+    <td><input type="text" id= "fri_hours" name="fri_hours"></td>
+    <td><input type="text" id= "fri_overtime" name="fri_overtime"></td>
+
+    </tr> 
+    <tr>
+    <td> Saturaday </td>
+    <td><input type="text" id= "sat_hours" name="sat_hours"></td>
+    <td><input type="text" id= "sat_overtime" name="sat_overtime"></td>
+
+    </tr> 
+    <tr>
+    <td> Sunday </td>
+    <td><input type="text" id= "sun_hours" name="sun_hours"></td>
+    <td><input type="text" id= "sun_overtime" name="sun_overtime"></td>
+
+    </tr> 
+
+</table>
+<br>
+    <input type="submit" value="Submit">
+    </br>
+    </head>
+</html>
+<style>
+ table, th, td {
+  border: 1px solid white;
+  border-collapse: collapse;
+}
+th, td {
+  background-color: #9bbbb3;
+<!--#abdbe3;---> 
+}
+</style>
