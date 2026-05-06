@@ -1,5 +1,5 @@
 from django import forms
-from .models import Department, Position, Employee, Attendance, Payroll
+from .models import Department, Position, Employee, Attendance, Payroll, Timesheet
 
 
 
@@ -49,4 +49,24 @@ class PayrollForm(forms.ModelForm):
         widgets = {
             'pay_period_start': forms.DateInput(attrs={'type': 'date'}),
             'pay_period_end': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+
+class TimesheetForm(forms.ModelForm):
+    class Meta:
+        model = Timesheet
+        fields = [
+            'week_start',
+            'week_end',
+            'mon_hours',
+            'tues_hours',
+            'wed_hours',
+            'thurs_hours',
+            'fri_hours',
+            'sat_hours',
+            'sun_hours'
+        ]
+        widgets = {
+            'week_start': forms.DateInput(attrs={'type': 'date'}),
+            'week_end': forms.DateInput(attrs={'type': 'date'}),
         }

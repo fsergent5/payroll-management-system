@@ -118,7 +118,7 @@
         }
 
         button {
-            background-color: #2d6cdf;
+            background-color: #3f8672;
             color: white;
             border: none;
             padding: 10px 16px;
@@ -127,7 +127,7 @@
         }
 
         button:hover {
-            background-color: #1d56b3;
+            background-color: #082e23;
         }
 
         table {
@@ -180,6 +180,8 @@
         <form method="POST">
             {% csrf_token %}
             <input type="hidden" name="form_type" value="employee">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
             {{ employee_form.as_p }}
             <button type="submit">Add Employee</button>
         </form>

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import Employee, Department, Position, Attendance,Payroll
-from .forms import DepartmentForm, PositionForm, EmployeeForm, AttendanceForm, PayrollForm
+from .models import Employee, Department, Position, Payroll, Timesheet
+from .forms import DepartmentForm, PositionForm, EmployeeForm, PayrollForm,TimesheetForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -14,7 +14,7 @@ def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-        department_key = request.POST.get("department_key")
+        department_key = request.POST.get("department_key", "").strip()
 
         user = authenticate(request, username=username, password=password)
 
@@ -30,10 +30,10 @@ def login_view(request):
                 'error': 'Employee profile not properly set up'
             })
 
-        if employee.department.department_id.strip().upper() != department_key.strip().upper():
-            return render(request, 'payroll/login.html', {
-                'error': 'Invalid department key'
-            })
+        #   if employee.department.department_id.strip().upper() != department_key.strip().upper():
+        #       return render(request, 'payroll/login.html', {
+        #           'error': 'Invalid department key'
+        #       })
 
         login(request, user)
 
@@ -58,25 +58,26 @@ def employee_portal(request):
             'error': 'No employee profile linked to this user'
         })
 
-    if request.method == 'POST':
-        form_type = request.POST.get('form_type')
+    #if request.method == 'POST':
+    #    form_type = request.POST.get('form_type')
 
-        # ---------------- Attendance (Employee ONLY)
-        if form_type == 'attendance':
-            form = AttendanceForm(request.POST, prefix='attendance')
-            if form.is_valid():
-                attendance = form.save(commit=False)
-                attendance.employee = employee
-                attendance.save()
-            return redirect('employee_portal')
+    # ---------------- Attendance (Employee ONLY)
+    if request.method == "POST":
+        #print("POST HIT:", request.POST)
+        form = TimesheetForm(request.POST)
+        if form.is_valid():
+             timesheet = form.save(commit=False)
+             timesheet.employee = employee
+             timesheet.save()
+             return redirect('employee_portal')
 
-    attendance_records = Attendance.objects.filter(employee=employee)
+    timesheets = Timesheet.objects.filter(employee=employee)
     payroll_records = Payroll.objects.filter(employee=employee)
 
     return render(request, 'payroll/employee_portal.html', {
         'employee': employee,
-        'attendance_records': attendance_records,
         'payroll_records': payroll_records,
+        'timesheets': timesheets,
     })
 
 
@@ -87,18 +88,20 @@ def employee_portal(request):
 def timesheet_portal(request):
 
     employee = Employee.objects.filter(user=request.user).first()
+    if not employee:
+        return redirect('employee_portal')
 
     if request.method == "POST":
-        form = AttendanceForm(request.POST)
+        form = TimesheetForm(request.POST)
         if form.is_valid():
-            attendance = form.save(commit=False)
-            attendance.employee = employee
-            attendance.save()
-            return redirect('employee_portal')
+            timesheet = form.save(commit=False)
+            timesheet.employee = employee
+            timesheet.save()
+
+        return redirect('employee_portal')
 
     return render(request, 'payroll/timesheet_portal.html', {
-        'form': AttendanceForm(),
-      
+        'form': TimesheetForm(),
     })
 
 
@@ -111,7 +114,7 @@ def employer_dashboard(request):
     employee = Employee.objects.filter(user=request.user).first()
 
     #  restrict access to admin only
-    if not employee or employee.department.department_name.lower() != "admin":
+    if not employee or not employee.department or employee.department.department_name.lower() != "admin":     
         return redirect('employee_portal')
 
     if request.method == 'POST':
@@ -165,8 +168,8 @@ def employer_dashboard(request):
 
             return redirect('employer_dashboard')
 
-        elif form_type == 'attendance':
-            form = AttendanceForm(request.POST, prefix='attendance')
+        elif form_type == 'timesheet':
+            form = TimesheetForm(request.POST)
             if form.is_valid():
                 form.save()
             return redirect('employer_dashboard')
@@ -181,13 +184,13 @@ def employer_dashboard(request):
         'department_form': DepartmentForm(prefix='department'),
         'position_form': PositionForm(prefix='position'),
         'employee_form': EmployeeForm(prefix='employee'),
-        'attendance_form': AttendanceForm(prefix='attendance'),
+        'timesheet_form': TimesheetForm(),
         'payroll_form': PayrollForm(prefix='payroll'),
 
         # admin sees ALL
         'employees': Employee.objects.select_related('department', 'position').all(),
         'departments': Department.objects.all(),
         'positions': Position.objects.all(),
-        'attendance_records': Attendance.objects.select_related('employee').all(),
+        'timesheet_records': Timesheet.objects.select_related('employee').all(),
         'payroll_records': Payroll.objects.select_related('employee').all(),
     })

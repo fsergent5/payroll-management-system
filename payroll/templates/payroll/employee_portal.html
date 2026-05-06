@@ -110,6 +110,38 @@
         {% endfor %}
     </table>
 </div>
+<h2>Timesheets</h2>
+
+<table>
+    <tr>
+        <th>Week</th>
+        <th>Mon</th>
+        <th>Tues</th>
+        <th>Wed</th>
+        <th>Thurs</th>
+        <th>Fri</th>
+        <th>Sat</th>
+        <th>Sun</th>
+    </tr>
+
+    {% for t in timesheets %}
+    <tr>
+        <td>{{ t.week_start }} - {{ t.week_end }}</td>
+        <td>{{ t.mon_hours }}</td>
+        <td>{{ t.tues_hours }}</td>
+        <td>{{ t.wed_hours }}</td>
+        <td>{{ t.thurs_hours }}</td>
+        <td>{{ t.fri_hours }}</td>
+        <td>{{ t.sat_hours }}</td>
+        <td>{{ t.sun_hours }}</td>
+    
+            </tr>
+    {% empty %}
+    <tr>
+        <td colspan="8">No timesheets yet.</td>
+    </tr>
+    {% endfor %}
+</table>
 
 <a href="{% url 'timesheet_portal' %}">
     <button type="button">Submit Timesheet</button>
