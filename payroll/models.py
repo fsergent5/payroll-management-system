@@ -4,11 +4,10 @@ from django.contrib.auth.models import User
 
 class Department(models.Model):
     department_name = models.CharField(max_length=100)
-    department_id= models.CharField(max_length=20, unique=True)
+    department_id = models.CharField(max_length=20, unique=True)
 
     def __str__(self):
         return self.department_name
-    
 
 
 class Position(models.Model):
@@ -60,7 +59,8 @@ class Payroll(models.Model):
 
     def __str__(self):
         return f"{self.employee} Payroll ({self.pay_period_start} to {self.pay_period_end})"
-    
+
+
 class Timesheet(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
 
@@ -74,3 +74,16 @@ class Timesheet(models.Model):
     fri_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     sat_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     sun_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+
+    # New field: the employee can submit a timesheet, but payroll is not created
+    # until the employer/admin approves it.
+    approved = models.BooleanField(default=False)
+
+    def total_hours(self):
+        return (
+            self.mon_hours + self.tues_hours + self.wed_hours +
+            self.thurs_hours + self.fri_hours + self.sat_hours + self.sun_hours
+        )
+
+    def __str__(self):
+        return f"{self.employee} Timesheet ({self.week_start} to {self.week_end})"

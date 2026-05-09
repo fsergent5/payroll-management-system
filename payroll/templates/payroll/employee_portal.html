@@ -51,6 +51,12 @@
 
 <h1>Employee Portal</h1>
 
+{% if error %}
+<div class="card">
+    <strong>Error:</strong> {{ error }}
+</div>
+{% endif %}
+
 <!-- EMPLOYEE INFO -->
 <div class="card">
     <h3>Welcome {{ employee.first_name }} {{ employee.last_name }}</h3>
@@ -92,7 +98,11 @@
         <tr>
             <th>Start</th>
             <th>End</th>
+            <th>Base Pay</th>
+            <th>Overtime Pay</th>
             <th>Gross</th>
+            <th>Tax</th>
+            <th>Insurance</th>
             <th>Net</th>
         </tr>
 
@@ -100,16 +110,22 @@
         <tr>
             <td>{{ record.pay_period_start }}</td>
             <td>{{ record.pay_period_end }}</td>
+            <td>{{ record.base_pay }}</td>
+            <td>{{ record.overtime_pay }}</td>
             <td>{{ record.gross_salary }}</td>
+            <td>{{ record.tax_deduction }}</td>
+            <td>{{ record.insurance_deduction }}</td>
             <td>{{ record.net_salary }}</td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4">No payroll records yet.</td>
+            <td colspan="8">No payroll records yet. Payroll will appear after admin approves your timesheet.</td>
         </tr>
         {% endfor %}
     </table>
 </div>
+
+<div class="card">
 <h2>Timesheets</h2>
 
 <table>
@@ -122,6 +138,8 @@
         <th>Fri</th>
         <th>Sat</th>
         <th>Sun</th>
+        <th>Total Hours</th>
+        <th>Status</th>
     </tr>
 
     {% for t in timesheets %}
@@ -134,14 +152,22 @@
         <td>{{ t.fri_hours }}</td>
         <td>{{ t.sat_hours }}</td>
         <td>{{ t.sun_hours }}</td>
-    
-            </tr>
+        <td>{{ t.total_hours }}</td>
+        <td>
+            {% if t.approved %}
+                Approved - Payroll Created
+            {% else %}
+                Submitted - Waiting for Admin Approval
+            {% endif %}
+        </td>
+    </tr>
     {% empty %}
     <tr>
-        <td colspan="8">No timesheets yet.</td>
+        <td colspan="10">No timesheets yet.</td>
     </tr>
     {% endfor %}
 </table>
+</div>
 
 <a href="{% url 'timesheet_portal' %}">
     <button type="button">Submit Timesheet</button>
