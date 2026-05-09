@@ -24,6 +24,7 @@ urlpatterns = [
         path('employee/', views.employee_portal, name='employee_portal'),
          path('login/', views.login_view, name='login'),
         path('timesheet/', views.timesheet_portal, name='timesheet_portal'),
+        path('approve-timesheet/<int:timesheet_id>/', views.approve_timesheet, name='approve_timesheet'),
 
     ]
  
