@@ -15,16 +15,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from payroll import views 
+from django.urls import path, include
+from payroll import views
 
 urlpatterns = [
-        path('', views.login_view, name='home'),
-        path('employer/', views.employer_dashboard, name='employer_dashboard'),
-        path('employee/', views.employee_portal, name='employee_portal'),
-         path('login/', views.login_view, name='login'),
-        path('timesheet/', views.timesheet_portal, name='timesheet_portal'),
-        path('approve-timesheet/<int:timesheet_id>/', views.approve_timesheet, name='approve_timesheet'),
+    path('admin/', admin.site.urls),
 
-    ]
- 
+    path('', views.login_view, name='home'),
+    path('login/', views.login_view, name='login'),
+
+    path('employer/', views.employer_dashboard, name='employer_dashboard'),
+    path('employee/', views.employee_portal, name='employee_portal'),
+    path('timesheet/', views.timesheet_portal, name='timesheet_portal'),
+
+    path('approve-timesheet/<int:timesheet_id>/', views.approve_timesheet, name='approve_timesheet'),
+
+    path('employees/delete/<int:id>/', views.delete_employee, name='delete_employee'),
+    path('positions/delete/<int:id>/', views.delete_position, name='delete_position'),
+]
