@@ -95,34 +95,115 @@
         </div>
     {% endif %}
 
-    <div class="section">
-        <h2>Add Department</h2>
-        <form method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="department">
-            {{ department_form.as_p }}
-            <button type="submit">Add Department</button>
-        </form>
-    </div>
+  <div class="section">
+    <h2>Add Department</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="department">
+        {{ department_form.as_p }}
+        <button type="submit">Add Department</button>
+    </form>
 
-    <div class="section">
-        <h2>Add Position</h2>
-        <form method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="position">
-            {{ position_form.as_p }}
-            <button type="submit">Add Position</button>
-        </form>
-    </div>
+    <h3>Current Departments</h3>
+
+    <table>
+        <tr>
+            <th>Department Name</th>
+            <th>Department Key</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for department in departments %}
+        <tr>
+            <form method="POST" action="{% url 'update_department' department.id %}">
+                {% csrf_token %}
+                <td>
+                    <input type="text" name="department_name" value="{{ department.department_name }}" required>
+                </td>
+
+                <td>
+                    <input type="text" name="department_id" value="{{ department.department_id }}" required>
+                </td>
+
+                <td>
+                    <button type="submit">Edit</button>
+
+                    <a href="{% url 'delete_department' department.id %}"
+                       onclick="return confirm('Delete this department? Only empty departments can be deleted.');">
+                        <button type="button">Delete</button>
+                    </a>
+                </td>
+            </form>
+        </tr>
+
+        {% empty %}
+        <tr>
+            <td colspan="3">No departments added yet.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+   <div class="section">
+    <h2>Add Position</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="position">
+        {{ position_form.as_p }}
+        <button type="submit">Add Position</button>
+    </form>
+
+    <h3>Current Positions</h3>
+
+    <table>
+        <tr>
+            <th>Position Title</th>
+            <th>Base Salary</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for position in positions %}
+        <tr>
+            <form method="POST" action="{% url 'update_position' position.id %}">
+                {% csrf_token %}
+                <td>
+                    <input type="text" name="position_title" value="{{ position.position_title }}" required>
+                </td>
+
+                <td>
+                    <input type="number" step="0.01" name="base_salary" value="{{ position.base_salary }}" required>
+                </td>
+
+                <td>
+                    <button type="submit">Edit</button>
+
+                    <a href="{% url 'delete_position' position.id %}"
+                       onclick="return confirm('Delete this position? Only unused positions can be deleted.');">
+                        <button type="button">Delete</button>
+                    </a>
+                </td>
+            </form>
+        </tr>
+
+        {% empty %}
+        <tr>
+            <td colspan="3">No positions added yet.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 
     <div class="section">
         <h2>Add Employee</h2>
         <form method="POST">
             {% csrf_token %}
             <input type="hidden" name="form_type" value="employee">
+
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
+
             {{ employee_form.as_p }}
+
             <button type="submit">Add Employee</button>
         </form>
     </div>
@@ -137,8 +218,10 @@
         </form>
     </div>
 
+    <!-- UPDATED EMPLOYEE TABLE -->
     <div class="section">
         <h2>Employees</h2>
+
         <table>
             <tr>
                 <th>Name</th>
@@ -146,7 +229,10 @@
                 <th>Position</th>
                 <th>Hire Date</th>
                 <th>Status</th>
+                <th>Action</th>
+                <th>Action</th>
             </tr>
+
             {% for employee in employees %}
             <tr>
                 <td>{{ employee.first_name }} {{ employee.last_name }}</td>
@@ -154,10 +240,17 @@
                 <td>{{ employee.position.position_title }}</td>
                 <td>{{ employee.hire_date }}</td>
                 <td>{{ employee.status }}</td>
+
+                <td>
+                    <a href="{% url 'delete_employee' employee.id %}">
+                        <button type="button">Delete Employee</button>
+                    </a>
+                </td>
             </tr>
+
             {% empty %}
             <tr>
-                <td colspan="5">No employees added yet.</td>
+                <td colspan="6">No employees added yet.</td>
             </tr>
             {% endfor %}
         </table>
@@ -165,6 +258,7 @@
 
     <div class="section">
         <h2>Timesheets Waiting for Approval</h2>
+
         <table>
             <tr>
                 <th>Employee</th>
@@ -172,12 +266,15 @@
                 <th>Total Hours</th>
                 <th>Status</th>
                 <th>Action</th>
+                <th>Action</th>
             </tr>
+
             {% for t in timesheet_records %}
             <tr>
                 <td>{{ t.employee.first_name }} {{ t.employee.last_name }}</td>
                 <td>{{ t.week_start }} - {{ t.week_end }}</td>
                 <td>{{ t.total_hours }}</td>
+
                 <td>
                     {% if t.approved %}
                         Approved - Payroll Created
@@ -185,16 +282,20 @@
                         Pending Admin Approval
                     {% endif %}
                 </td>
+
                 <td>
                     {% if not t.approved %}
                         <a href="{% url 'approve_timesheet' t.id %}">
-                            <button type="button">Approve and Calculate Pay</button>
+                            <button type="button">
+                                Approve and Calculate Pay
+                            </button>
                         </a>
                     {% else %}
                         Complete
                     {% endif %}
                 </td>
             </tr>
+
             {% empty %}
             <tr>
                 <td colspan="5">No timesheets submitted yet.</td>
@@ -202,33 +303,9 @@
             {% endfor %}
         </table>
     </div>
-
-    <div class="section">
-        <h2>Attendance Records</h2>
-        <table>
-            <tr>
-                <th>Employee</th>
-                <th>Work Date</th>
-                <th>Hours Worked</th>
-                <th>Overtime Hours</th>
-            </tr>
-            {% for record in attendance_records %}
-            <tr>
-                <td>{{ record.employee.first_name }} {{ record.employee.last_name }}</td>
-                <td>{{ record.work_date }}</td>
-                <td>{{ record.hours_worked }}</td>
-                <td>{{ record.overtime_hours }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4">No attendance records added yet.</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-
-    <div class="section">
+<div class="section">
         <h2>Payroll Records</h2>
+
         <table>
             <tr>
                 <th>Employee</th>
@@ -241,6 +318,7 @@
                 <th>Insurance Deduction</th>
                 <th>Net Salary</th>
             </tr>
+
             {% for record in payroll_records %}
             <tr>
                 <td>{{ record.employee.first_name }} {{ record.employee.last_name }}</td>
@@ -253,6 +331,7 @@
                 <td>{{ record.insurance_deduction }}</td>
                 <td>{{ record.net_salary }}</td>
             </tr>
+
             {% empty %}
             <tr>
                 <td colspan="9">No payroll records added yet.</td>

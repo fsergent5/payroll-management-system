@@ -33,7 +33,6 @@ def login_view(request):
                 'error': 'Employee profile not properly set up'
             })
 
-        # Department key check. It is active so the login matches the project requirement.
         if employee.department.department_id.strip().upper() != department_key.strip().upper():
             return render(request, 'payroll/login.html', {
                 'error': 'Invalid department key'
@@ -50,11 +49,10 @@ def login_view(request):
 
 
 # -------------------------
-# EMPLOYEE PORTAL (Employee ONLY)
+# EMPLOYEE PORTAL
 # -------------------------
 @login_required
 def employee_portal(request):
-
     employee = Employee.objects.filter(user=request.user).first()
 
     if not employee:
@@ -84,12 +82,12 @@ def employee_portal(request):
 
 
 # -------------------------
-# TIMESHEET PORTAL (Employee ONLY)
+# TIMESHEET PORTAL
 # -------------------------
 @login_required
 def timesheet_portal(request):
-
     employee = Employee.objects.filter(user=request.user).first()
+
     if not employee:
         return redirect('employee_portal')
 
@@ -110,14 +108,12 @@ def timesheet_portal(request):
 
 
 # -------------------------
-# EMPLOYER DASHBOARD (ADMIN ONLY)
+# EMPLOYER DASHBOARD
 # -------------------------
 @login_required
 def employer_dashboard(request):
-
     employee = Employee.objects.filter(user=request.user).first()
 
-    # restrict access to admin only
     if not employee or not employee.department or employee.department.department_name.lower() != "admin":
         return redirect('employee_portal')
 
@@ -192,7 +188,6 @@ def employer_dashboard(request):
         'payroll_form': PayrollForm(prefix='payroll'),
         'attendance_form': AttendanceForm(),
 
-        # admin sees ALL
         'employees': Employee.objects.select_related('department', 'position').all(),
         'departments': Department.objects.all(),
         'positions': Position.objects.all(),
@@ -221,7 +216,6 @@ def approve_timesheet(request, timesheet_id):
     regular_hours = min(total_hours, Decimal('40.00'))
     overtime_hours = max(total_hours - Decimal('40.00'), Decimal('0.00'))
 
-    # Annual salary is converted to an hourly rate using 2,080 work hours per year.
     hourly_rate = timesheet.employee.position.base_salary / Decimal('2080.00')
 
     base_pay = regular_hours * hourly_rate
@@ -248,5 +242,113 @@ def approve_timesheet(request, timesheet_id):
 
     timesheet.approved = True
     timesheet.save()
+
+    return redirect('employer_dashboard')
+
+
+# -------------------------
+# DELETE EMPLOYEE + LOGIN + RECORDS
+# -------------------------
+@login_required
+def delete_employee(request, employee_id):
+    admin_employee = Employee.objects.filter(user=request.user).first()
+
+    if not admin_employee or not admin_employee.department or admin_employee.department.department_name.lower() != "admin":
+        return redirect('employee_portal')
+
+    employee = get_object_or_404(Employee, id=employee_id)
+
+    # Prevent the admin from deleting their own account
+    if employee.user == request.user:
+        return redirect('employer_dashboard')
+
+    Attendance.objects.filter(employee=employee).delete()
+    Payroll.objects.filter(employee=employee).delete()
+    Timesheet.objects.filter(employee=employee).delete()
+
+    user = employee.user
+
+    employee.delete()
+    user.delete()
+
+    return redirect('employer_dashboard')
+    # -------------------------
+# UPDATE DEPARTMENT
+# -------------------------
+@login_required
+def update_department(request, department_id):
+    admin_employee = Employee.objects.filter(user=request.user).first()
+
+    if not admin_employee or not admin_employee.department or admin_employee.department.department_name.lower() != "admin":
+        return redirect('employee_portal')
+
+    department = get_object_or_404(Department, id=department_id)
+
+    if request.method == "POST":
+        department.department_name = request.POST.get("department_name")
+        department.department_id = request.POST.get("department_id")
+        department.save()
+
+    return redirect('employer_dashboard')
+
+
+# -------------------------
+# DELETE DEPARTMENT
+# -------------------------
+@login_required
+def delete_department(request, department_id):
+    admin_employee = Employee.objects.filter(user=request.user).first()
+
+    if not admin_employee or not admin_employee.department or admin_employee.department.department_name.lower() != "admin":
+        return redirect('employee_portal')
+
+    department = get_object_or_404(Department, id=department_id)
+
+    # Prevent deleting departments assigned to employees
+    if Employee.objects.filter(department=department).exists():
+        return redirect('employer_dashboard')
+
+    department.delete()
+
+    return redirect('employer_dashboard')
+
+
+# -------------------------
+# UPDATE POSITION
+# -------------------------
+@login_required
+def update_position(request, position_id):
+    admin_employee = Employee.objects.filter(user=request.user).first()
+
+    if not admin_employee or not admin_employee.department or admin_employee.department.department_name.lower() != "admin":
+        return redirect('employee_portal')
+
+    position = get_object_or_404(Position, id=position_id)
+
+    if request.method == "POST":
+        position.position_title = request.POST.get("position_title")
+        position.base_salary = request.POST.get("base_salary")
+        position.save()
+
+    return redirect('employer_dashboard')
+
+
+# -------------------------
+# DELETE POSITION
+# -------------------------
+@login_required
+def delete_position(request, position_id):
+    admin_employee = Employee.objects.filter(user=request.user).first()
+
+    if not admin_employee or not admin_employee.department or admin_employee.department.department_name.lower() != "admin":
+        return redirect('employee_portal')
+
+    position = get_object_or_404(Position, id=position_id)
+
+    # Prevent deleting positions assigned to employees
+    if Employee.objects.filter(position=position).exists():
+        return redirect('employer_dashboard')
+
+    position.delete()
 
     return redirect('employer_dashboard')

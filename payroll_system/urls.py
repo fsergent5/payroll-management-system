@@ -16,15 +16,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from payroll import views 
+from payroll import views
+
 
 urlpatterns = [
-        path('', views.login_view, name='home'),
-        path('employer/', views.employer_dashboard, name='employer_dashboard'),
-        path('employee/', views.employee_portal, name='employee_portal'),
-         path('login/', views.login_view, name='login'),
-        path('timesheet/', views.timesheet_portal, name='timesheet_portal'),
-        path('approve-timesheet/<int:timesheet_id>/', views.approve_timesheet, name='approve_timesheet'),
+    path('admin/', admin.site.urls),
 
-    ]
- 
+    path('', views.login_view, name='home'),
+    path('login/', views.login_view, name='login'),
+
+    path('employee/', views.employee_portal, name='employee_portal'),
+    path('timesheet/', views.timesheet_portal, name='timesheet_portal'),
+
+    path('employer/', views.employer_dashboard, name='employer_dashboard'),
+
+    path('approve-timesheet/<int:timesheet_id>/', views.approve_timesheet, name='approve_timesheet'),
+
+    path('delete-employee/<int:employee_id>/', views.delete_employee, name='delete_employee'),
+
+    path('update-department/<int:department_id>/', views.update_department, name='update_department'),
+    path('delete-department/<int:department_id>/', views.delete_department, name='delete_department'),
+
+    path('update-position/<int:position_id>/', views.update_position, name='update_position'),
+    path('delete-position/<int:position_id>/', views.delete_position, name='delete_position'),
+]
