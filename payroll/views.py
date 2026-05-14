@@ -81,7 +81,24 @@ def employee_portal(request):
         'timesheets': timesheets,
         'attendance_records': attendance_records,
     })
+# -------------------------
+# DELETE EMPLOYEE
+# -------------------------
+@login_required
+def delete_employee(request, id):
+    employee = get_object_or_404(Employee, id=id)
+    employee.delete()
+    return redirect('employer_dashboard')
 
+
+# -------------------------
+# DELETE POSITION
+# -------------------------
+@login_required
+def delete_position(request, id):
+    position = get_object_or_404(Position, id=id)
+    position.delete()
+    return redirect('employer_dashboard')
 
 # -------------------------
 # TIMESHEET PORTAL (Employee ONLY)

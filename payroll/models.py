@@ -28,7 +28,7 @@ class Employee(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    position = models.ForeignKey(Position, on_delete=models.CASCADE)
+    position = models.ForeignKey(Position,on_delete=models.SET_NULL,null=True,blank=True)
     hire_date = models.DateField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES)
 
